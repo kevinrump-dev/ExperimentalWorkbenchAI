@@ -22,7 +22,6 @@ class Evaluator(object):
         for i in percantages:
             # take the current percantage of data from x and y make sure they are same index so y and x from the same row stay same row
             x_test = self.x_test[:int(len(self.x_test) * i)]
-            y_test = self.y_test[:int(len(self.y_test) * i)]
             # run the model with the current data
             start_time = time.time()
             predictions = self.model.predict(x_test)

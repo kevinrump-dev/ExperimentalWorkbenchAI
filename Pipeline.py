@@ -10,11 +10,11 @@ class Pipeline(object):
         self.config = config
         self.model = model
         self.preprocessor = preprocessor
-        self.__check_input()
+        self.__check_steps()
         self.__check_model()
         self.__check_config()
 
-    def __check_input(self):
+    def __check_steps(self):
         # go through the input an check
         if not isinstance(self.steps[0], Analyser):
             raise TypeError("First Step must be an Analyser")
@@ -29,13 +29,13 @@ class Pipeline(object):
             raise KeyError("Config must contain a type")
         if not "outputType" in self.config:
             raise KeyError("Config must contain an outputType")
-        if self.config["outputType"] is ("graphical" or "*"):
+        if self.config["outputType"] is ("Graphical" or "*"):
             if not "outputFileType" in self.config:
                 raise KeyError("Config must contain an outputFileType")
-            if not "outputFileName" in self.config:
-                raise KeyError("Config must contain an outputFileName")
-            if not "outputFilePath" in self.config:
-                raise KeyError("Config must contain an outputFilePath")
+        if not "outputFileName" in self.config:
+            raise KeyError("Config must contain an outputFileName")
+        if not "outputFilePath" in self.config:
+            raise KeyError("Config must contain an outputFilePath")
         if not "trainedState" in self.config:
             raise KeyError("Config must contain a trainedState")
         if self.config["trainedState"] == False:
