@@ -24,7 +24,7 @@ class Pipeline(object):
             raise TypeError("Third Step must be an Extractor")
 
     def __check_config(self):
-        # the config has to contain certain keys: type, parameters, outputType, outputFileType, outputFileName, outputFilePath
+        # the config has to contain certain keys: type, outputType, outputFileType, outputFileName, outputFilePath
         if not "type" in self.config:
             raise KeyError("Config must contain a type")
         if not "outputType" in self.config:
@@ -49,13 +49,14 @@ class Pipeline(object):
             raise AttributeError("Model must have a predict method")
         if not hasattr(self.model, "fit"):
             raise AttributeError("Model must have a fit method")
-        if not hasattr(self.model, "transform"):
-            raise AttributeError("Model must have a transform method")
+        if self.config["type"] == "classification" and not hasattr(self.model, "predict_proba"):
+            raise AttributeError("Classification Model must have a predict_proba method")
 
     def test(self):
         # first call the analyser
-        outcome_analyser = self.steps[0].analyse()
+        #outcome_analyser = self.steps[0].analyse()
         # then call the evaluator
-        outcome_evaluator = self.steps[1].evaluate()
+        outcome_evaluator = self.steps[1].evaluate(self.model, self.config["type"])
+        print(outcome_evaluator)
         # then call the extractor
-        self.steps[2].extract(outcome_analyser, outcome_evaluator)
+        #self.steps[2].extract(outcome_evaluator)

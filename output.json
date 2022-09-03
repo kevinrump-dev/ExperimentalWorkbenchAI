@@ -1,0 +1,40 @@
+{
+  "efficiency": {
+    "10.0%": {
+      "amountOfData": 0.1,
+      "time": 0.2232980728149414,
+      "cpu_usage": 50.0,
+      "ram_usage": 58.0
+    },
+    "20.0%": {
+      "amountOfData": 0.2,
+      "time": 0.21999311447143555,
+      "cpu_usage": 86.8,
+      "ram_usage": 58.9
+    },
+    "50.0%": {
+      "amountOfData": 0.5,
+      "time": 0.5060489177703857,
+      "cpu_usage": 46.9,
+      "ram_usage": 60.9
+    },
+    "75.0%": {
+      "amountOfData": 0.75,
+      "time": 0.4873208999633789,
+      "cpu_usage": 47.6,
+      "ram_usage": 62.5
+    },
+    "100%": {
+      "amountOfData": 1,
+      "time": 0.4988088607788086,
+      "cpu_usage": 47.9,
+      "ram_usage": 63.0
+    }
+  },
+  "metrics": {
+    "mae": 2.501387045884105,
+    "mse": 8.33917188801281,
+    "rmse": 2.887762436214726,
+    "r2": -3.144761759843462e-5
+  }
+}
