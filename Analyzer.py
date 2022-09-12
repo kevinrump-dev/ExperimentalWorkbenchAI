@@ -1,8 +1,7 @@
-import numpy as np 
 import pandas as pd
+import json
 
-
-class Analyser(object):
+class Analyzer(object):
 
     def __init__(self, x_test, y_test, x_columns=None, y_column=None):
         self.x_test = x_test
@@ -20,12 +19,12 @@ class Analyser(object):
             # check if the data is already in pandas dataframes
             if not isinstance(self.x_test, pd.DataFrame):
                 raise TypeError("x_test must be a pandas DataFrame or a numpy array, then you must specify the columns")
-            if not isinstance(self.y_test, pd.DataFrame):
-                raise TypeError("y_test must be a pandas DataFrame or a numpy array, then you must specify the columns")
+            if not isinstance(self.y_test, pd.Series):
+                raise TypeError("y_test must be a pandas Series or a numpy array, then you must specify the columns")
     
-    def __analyze(self, column):
+    def __analyze(self, column, column_name=None):
         column.replace(" ", float("NaN"), inplace=True)
-        col = {"header": column}
+        col = {"header": column_name}
         if list(column.unique()) == [0, 1] or list(column.unique()) == [1, 0] or column.dtype == "object":
             try:
                 column = column.astype(float)
@@ -52,25 +51,25 @@ class Analyser(object):
             col["minName"] = column.value_counts().index[-1]
             col["min"] = list(column.value_counts())[-1]
             col["type"] = "category"
+        return col
 
     def __analyze_x(self):
         analyzed_x = []
         for column in self.x_test:
-            col = self.__analyze(column)
+            col = self.__analyze(self.x_test[column], column)
             analyzed_x.append(col)
         return analyzed_x
 
     def __analyze_y(self):
         analyzed_y = []
-        for column in self.y_test:
-            col = self.__analyze(column)
-            analyzed_y.append(col)
+        col = self.__analyze(self.y_test, self.y_test.name)
+        analyzed_y.append(col)
         return analyzed_y
     
     def analyze(self):
         self.transform_data()
         self.analyzed_information = {
-            "x": self.analyze_x(),
-            "y": self.analyze_y()
+            "x": self.__analyze_x(),
+            "y": self.__analyze_y()
         }
         return self.analyzed_information

@@ -1,6 +1,7 @@
-from Analyser import Analyser
+from Analyzer import Analyzer
 from Evaluator import Evaluator
-from Extractor import Extractor
+from JSONExtractor import JSONExtractor
+from GraphicalExtractor import GraphicalExtractor
 
 
 class Pipeline(object):
@@ -16,12 +17,15 @@ class Pipeline(object):
 
     def __check_steps(self):
         # go through the input an check
-        if not isinstance(self.steps[0], Analyser):
+        if not isinstance(self.steps[0], Analyzer):
             raise TypeError("First Step must be an Analyser")
         if not isinstance(self.steps[1], Evaluator):
             raise TypeError("Second Step must be an Evaluator")
-        if not isinstance(self.steps[2], Extractor):
+        if not isinstance(self.steps[2], (JSONExtractor, GraphicalExtractor)):
             raise TypeError("Third Step must be an Extractor")
+        if len(self.steps) > 3:
+            if not isinstance(self.steps[-1], GraphicalExtractor):
+                raise TypeError("Last Step must be an Graphical Extractor")
 
     def __check_config(self):
         # the config has to contain certain keys: type, outputType, outputFileType, outputFileName, outputFilePath
@@ -54,9 +58,16 @@ class Pipeline(object):
 
     def test(self):
         # first call the analyser
-        #outcome_analyser = self.steps[0].analyse()
+        outcome_analyser = self.steps[0].analyze()
         # then call the evaluator
         outcome_evaluator = self.steps[1].evaluate(self.model, self.config["type"])
-        print(outcome_evaluator)
-        # then call the extractor
-        #self.steps[2].extract(outcome_evaluator)
+        # when outputType is graphical, call the graphical extractor
+        if self.config["outputType"] == "Graphical":
+            self.steps[2].extract(self.config["outputFileType"], self.config["outputFileName"], self.config["outputFilePath"], outcome_evaluator, outcome_analyser)
+        # when outputType is JSON, call the JSON extractor
+        elif self.config["outputType"] == "JSON":
+            self.steps[2].extract(self.config["outputFileName"], self.config["outputFilePath"], outcome_evaluator, outcome_analyser)
+        # when outputType is *, call the graphical and JSON extractor
+        elif self.config["outputType"] == "*":
+            self.steps[2].extract(self.config["outputFileName"], self.config["outputFilePath"], outcome_evaluator, outcome_analyser)
+            self.steps[3].extract(self.config["outputFileType"], self.config["outputFileName"], self.config["outputFilePath"], outcome_evaluator, outcome_analyser)

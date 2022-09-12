@@ -36,10 +36,6 @@ class Evaluator(object):
                 self.predictions = predictions
 
 
-    def __test_convergence(self):
-        # test the convergence of the model, like how fast and how often the model converges
-        pass
-
     def __test_metrics(self):
         # test the different metrics for the specific type (classification or regression)
         if self.algo_type == "classification":
@@ -50,20 +46,29 @@ class Evaluator(object):
             false_negative = 0
             # true positive is when we predicted its 1 and it was 1
             for i in range(len(self.predictions)):
-                if self.predictions[i] == 1 and self.test_data.iloc[i]["class"] == 1:
+                if self.predictions[i] == 1 and self.y_test.iloc[i] == 1:
                     true_positive += 1
                 # false positive is when we predicted its 1 and it was 0
-                elif self.predictions[i] == 1 and self.test_data.iloc[i]["class"] == 0:
+                elif self.predictions[i] == 1 and self.y_test.iloc[i] == 0:
                     false_positive += 1
                 # true negative is when we predicted its 0 and it was 0
-                elif self.predictions[i] == 0 and self.test_data.iloc[i]["class"] == 0:
+                elif self.predictions[i] == 0 and self.y_test.iloc[i] == 0:
                     true_negative += 1
                 # false negative is when we predicted its 0 and it was 1
-                elif self.predictions[i] == 0 and self.test_data.iloc[i]["class"] == 1:
+                elif self.predictions[i] == 0 and self.y_test.iloc[i] == 1:
                     false_negative += 1
-            precision = true_positive / (true_positive + false_positive)
-            recall = true_positive / (true_positive + false_negative)
-            f1_score = 2 * (precision * recall) / (precision + recall)
+            if true_positive + false_positive == 0:
+                precision = 0
+            else:
+                precision = true_positive / (true_positive + false_positive)
+            if true_positive + false_negative == 0:
+                recall = 0
+            else:
+                recall = true_positive / (true_positive + false_negative)
+            if precision + recall == 0:
+                f1_score = 0
+            else:
+                f1_score = 2 * (precision * recall) / (precision + recall)
             self.outcome["metrics"] = {"precision": precision, "recall": recall, "f1_score": f1_score, "true_positive": true_positive, "false_positive": false_positive, "true_negative": true_negative, "false_negative": false_negative}
         elif self.algo_type == "regression":
             # we will calculate the MAE,MSE,RMSE,R2 from the self.predictions
@@ -84,7 +89,6 @@ class Evaluator(object):
         if self.algo_type == "classification":
             self.__test_accuracy()
         self.__test_efficiency()
-        self.__test_convergence()
         self.__test_metrics()
 
     def evaluate(self, model=None, algo_type=None):
