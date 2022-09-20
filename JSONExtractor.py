@@ -1,4 +1,10 @@
 import json
+import numpy as np
+
+def np_encoder(object):
+        if isinstance(object, np.generic):
+            return object.item()
+
 class JSONExtractor(object):
     def __init__(self):
         self.output = {}
@@ -8,5 +14,6 @@ class JSONExtractor(object):
         self.output["outputFilePath"] = output_path
         self.output["Evaluation"] = evaluator_outcome
         self.output["Analysis"] = analyzer_outcome
+
         with open(output_path + output_filename +".json", 'w') as outfile:
-            json.dump(self.output, outfile)
+            json.dump(self.output, outfile, default=np_encoder)
